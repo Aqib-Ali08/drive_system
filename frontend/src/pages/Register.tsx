@@ -16,6 +16,7 @@ export default function Register() {
 
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -32,8 +33,9 @@ export default function Register() {
       return;
     }
 
+    setLoading(true);
     try {
-      const res = await registerUser( name, email, password );
+      const res = await registerUser(name, email, password);
 
       toast({
         title: "Account created!",
@@ -47,6 +49,8 @@ export default function Register() {
         description: error?.response?.data?.message || "Something went wrong.",
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,7 +69,7 @@ export default function Register() {
 
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-4">
-            
+
             {/* Name */}
             <div className="space-y-2">
               <Label>Full Name</Label>
@@ -75,6 +79,7 @@ export default function Register() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -87,6 +92,7 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
 
@@ -100,12 +106,13 @@ export default function Register() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={loading}
                 />
-
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
+                  disabled={loading}
                 >
                   {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
@@ -122,19 +129,22 @@ export default function Register() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
+                  disabled={loading}
                 />
-
                 <button
                   type="button"
                   onClick={() => setShowConfirmPass(!showConfirmPass)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
+                  disabled={loading}
                 >
                   {showConfirmPass ? <EyeOff size={20} /> : <Eye size={20} />}
                 </button>
               </div>
             </div>
 
-            <Button type="submit" className="w-full">Create Account</Button>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Creating Account..." : "Create Account"}
+            </Button>
           </form>
 
           <div className="mt-4 text-center text-sm">
